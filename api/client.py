@@ -1,8 +1,8 @@
 """API client for retrieving product data."""
 
 import requests
-from typing import List, Dict, Any
-from ..config import config
+from typing import List, Dict, Any, Optional
+from ..config import APIConfig, config
 from ..utils.logger import setup_logger
 from ..utils.exceptions import APIError, APIPaginationError
 
@@ -12,7 +12,7 @@ logger = setup_logger(__name__)
 class APIClient:
     """Client for interacting with the products API."""
 
-    def __init__(self, api_config=None):
+    def __init__(self, api_config: Optional[APIConfig] = None) -> None:
         """Initialize the API client with configuration."""
         self.api_config = api_config or config.api
         self.pagination_config = config.pagination
@@ -89,21 +89,9 @@ class APIClient:
 
                 skip += limit
 
-            except requests.exceptions.ConnectionError as e:
-                logger.error(f"Connection error: {e}")
-                raise APIError(f"Failed to connect to API: {e}")
-            except requests.exceptions.Timeout as e:
-                logger.error(f"Timeout error: {e}")
-                raise APIError(f"API request timed out: {e}")
-            except requests.exceptions.HTTPError as e:
-                logger.error(f"HTTP error: {e}")
-                raise APIError(f"API returned HTTP error: {e}")
-            except requests.exceptions.RequestException as e:
-                logger.error(f"Request error: {e}")
-                raise APIError(f"API request failed: {e}")
-            except ValueError as e:
-                logger.error(f"JSON parsing error: {e}")
-                raise APIError(f"Failed to parse API response: {e}")
+            except (requests.exceptions.RequestException, ValueError) as e:
+                logger.error(f"API request error: {e}")
+                raise APIError(f"API request failed: {e}") from e
 
         logger.info(f"Completed fetching {len(all_products)} total products")
         return all_products

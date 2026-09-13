@@ -1,14 +1,9 @@
 """Tests for data validation utilities."""
 
 import unittest
-from unittest.mock import patch, MagicMock
-import sys
-import os
 
-# Add the parent directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
-from automated_business_reporting_engine.data.validator import validate_product_data, DataValidationError
+from automated_business_reporting_engine.data.validator import validate_product_data
+from automated_business_reporting_engine.utils.exceptions import DataValidationError
 
 
 class TestDataValidation(unittest.TestCase):
@@ -30,8 +25,8 @@ class TestDataValidation(unittest.TestCase):
             }
         ]
 
-        validated = validate_product_data(valid_products)
-        self.assertEqual(len(validated), 1)
+        validate_product_data(valid_products)  # Should not raise
+        self.assertEqual(len(valid_products), 1)
 
     def test_missing_field(self):
         """Test that missing required fields raise DataValidationError."""

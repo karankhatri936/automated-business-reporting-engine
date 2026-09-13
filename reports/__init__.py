@@ -1,0 +1,1 @@
+"""Report generation module for Excel and PDF outputs."""

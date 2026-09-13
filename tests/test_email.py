@@ -1,13 +1,9 @@
 """Tests for SMTP email delivery (fully mocked - no real SMTP server)."""
 
-import os
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import smtplib
 

@@ -23,6 +23,7 @@ from openpyxl.chart.label import DataLabelList
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
+from openpyxl.worksheet.worksheet import Worksheet
 
 from ..config import REPORT_VERSION, OutputConfig, config
 from ..utils.exceptions import ExcelReportError
@@ -183,7 +184,7 @@ def _excel_value(value: Any) -> Any:
     return value
 
 
-def _auto_widths(ws, df: pd.DataFrame, col_specs) -> None:
+def _auto_widths(ws, df: pd.DataFrame, col_specs: list) -> None:
     """Set readable column widths from header/data length (capped)."""
     for i, (col, header, _fmt) in enumerate(col_specs, start=1):
         if col not in df.columns:
@@ -196,7 +197,7 @@ def _auto_widths(ws, df: pd.DataFrame, col_specs) -> None:
         ws.column_dimensions[get_column_letter(i)].width = min(length + 3, 50)
 
 
-def _style_header_row(ws, row: int, ncols: int) -> None:
+def _style_header_row(ws: Worksheet, row: int, ncols: int) -> None:
     """Apply professional header styling to a row of cells."""
     for col in range(1, ncols + 1):
         cell = ws.cell(row=row, column=col)
@@ -206,7 +207,7 @@ def _style_header_row(ws, row: int, ncols: int) -> None:
         cell.alignment = Alignment(horizontal="center", vertical="center")
 
 
-def _write_section_title(ws, row: int, text: str, max_col: int = 2) -> int:
+def _write_section_title(ws: Worksheet, row: int, text: str, max_col: int = 2) -> int:
     """Write a shaded section header across ``max_col`` columns; returns next row."""
     ws.merge_cells(
         start_row=row, start_column=1, end_row=row, end_column=max_col
@@ -219,10 +220,10 @@ def _write_section_title(ws, row: int, text: str, max_col: int = 2) -> int:
 
 
 def _write_data_region(
-    ws,
+    ws: Worksheet,
     df: pd.DataFrame,
     start_row: int,
-    col_specs,
+    col_specs: list,
     table_name: Optional[str] = None,
     zebra: bool = True,
 ) -> int:
@@ -368,14 +369,14 @@ class ExcelReportGenerator:
 
     # ── Sheet builders ──────────────────────────────────────────
 
-    def _build_product_data(self, ws, df: pd.DataFrame) -> None:
+    def _build_product_data(self, ws: Worksheet, df: pd.DataFrame) -> None:
         """Sheet 2 - full processed dataset as an Excel table."""
         _write_data_region(ws, df, 1, PRODUCT_COLUMNS, table_name="ProductData")
         _auto_widths(ws, df, PRODUCT_COLUMNS)
         ws.freeze_panes = "A2"
         logger.debug("Writing Product Data sheet")
 
-    def _build_category_analysis(self, ws, kpis: Dict[str, Any]) -> int:
+    def _build_category_analysis(self, ws: Worksheet, kpis: Dict[str, Any]) -> int:
         """Sheet 3 - category metrics; returns last data row (for charts)."""
         category_df = kpis["category"]
         next_row = _write_data_region(
@@ -386,7 +387,7 @@ class ExcelReportGenerator:
         logger.debug("Writing Category Analysis sheet")
         return next_row - 1
 
-    def _build_product_analysis(self, ws, kpis: Dict[str, Any]) -> None:
+    def _build_product_analysis(self, ws: Worksheet, kpis: Dict[str, Any]) -> None:
         """Sheet 4 - product-level ranking tables."""
         row = 1
         for key, title, specs in PRODUCT_ANALYSIS_SECTIONS:
@@ -404,7 +405,7 @@ class ExcelReportGenerator:
 
     def _build_dashboard(
         self,
-        ws,
+        ws: Worksheet,
         df: pd.DataFrame,
         kpis: Dict[str, Any],
         meta: Dict[str, Any],
@@ -448,7 +449,7 @@ class ExcelReportGenerator:
             ws.column_dimensions[col].width = width
         logger.debug("Writing Dashboard sheet")
 
-    def _build_kpi_table(self, ws, start_row: int, general: Dict[str, Any]) -> int:
+    def _build_kpi_table(self, ws: Worksheet, start_row: int, general: Dict[str, Any]) -> int:
         """KPI summary label/value table on the Dashboard."""
         row = _write_section_title(ws, start_row, "KPI Summary")
         ws.cell(row=row, column=1, value="Metric")
@@ -469,7 +470,7 @@ class ExcelReportGenerator:
             row += 1
         return row
 
-    def _build_inventory_status(self, ws, start_row: int, df: pd.DataFrame) -> int:
+    def _build_inventory_status(self, ws: Worksheet, start_row: int, df: pd.DataFrame) -> int:
         """Product count per stock status on the Dashboard."""
         if "stock_status" not in df.columns:
             return start_row
@@ -495,7 +496,7 @@ class ExcelReportGenerator:
             row += 1
         return row
 
-    def _build_top_products(self, ws, start_row: int, kpis: Dict[str, Any]) -> int:
+    def _build_top_products(self, ws: Worksheet, start_row: int, kpis: Dict[str, Any]) -> int:
         """Top 5 products by inventory value on the Dashboard."""
         row = _write_section_title(
             ws, start_row, "Top Products by Inventory Value", max_col=5
@@ -512,7 +513,7 @@ class ExcelReportGenerator:
         ]
         return _write_data_region(ws, top_df.head(5), row, specs)
 
-    def _add_category_charts(self, ws, category_ws, last_data_row: int) -> None:
+    def _add_category_charts(self, ws: Worksheet, category_ws: Worksheet, last_data_row: int) -> None:
         """Add category pie and inventory bar charts anchored on the Dashboard."""
         if last_data_row < 2:
             logger.warning("Not enough category data to build charts")
@@ -563,7 +564,7 @@ class ExcelReportGenerator:
         ws.add_chart(bar, "F25")
         logger.debug("Added category charts to Dashboard")
 
-    def _build_metadata(self, ws, meta: Dict[str, Any]) -> None:
+    def _build_metadata(self, ws: Worksheet, meta: Dict[str, Any]) -> None:
         """Sheet 5 - report/API metadata key-value table."""
         rows = [
             ("Report Name", meta["report_title"]),

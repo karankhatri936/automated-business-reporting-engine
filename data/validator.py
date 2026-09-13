@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from ..utils.exceptions import DataValidationError
 
 
-def validate_product_data(products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def validate_product_data(products: List[Dict[str, Any]]) -> None:
     """
     Validate product data for missing fields, invalid types, and bad values.
 
@@ -18,9 +18,6 @@ def validate_product_data(products: List[Dict[str, Any]]) -> List[Dict[str, Any]
 
     Args:
         products: List of product dictionaries from API
-
-    Returns:
-        Validated product list (unchanged if valid)
 
     Raises:
         DataValidationError: If invalid data is found
@@ -119,5 +116,3 @@ def validate_product_data(products: List[Dict[str, Any]]) -> List[Dict[str, Any]
             for i, errors in invalid_entries
         )
         raise DataValidationError(f"Data validation failed: {error_details}")
-
-    return products

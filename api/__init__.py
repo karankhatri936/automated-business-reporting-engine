@@ -1,0 +1,1 @@
+"""API client module for retrieving product data."""

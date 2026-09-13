@@ -1,12 +1,6 @@
 """Tests for KPI calculations."""
 
 import unittest
-from unittest.mock import patch, MagicMock
-import sys
-import os
-
-# Add the parent directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 from automated_business_reporting_engine.analytics.kpis import KPIEngine

@@ -4,16 +4,11 @@ These tests exercise the real APScheduler with short sub-minute intervals.
 They are fully offline -- no external API or network access is involved.
 """
 
-import os
-import sys
 import threading
 import time
 import unittest
 
-# Make the project root importable as ``automated_business_reporting_engine``.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from automated_business_reporting_engine.scheduler import (
+from automated_business_reporting_engine.scheduler.scheduler import (
     ReportScheduler,
     run_job_once,
 )

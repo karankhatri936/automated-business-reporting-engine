@@ -28,7 +28,7 @@ from typing import Any, Callable, Optional
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from ..config import config
+from ..config import SchedulerConfig, config
 from ..utils.exceptions import SchedulerError
 from ..utils.logger import setup_logger
 
@@ -83,7 +83,7 @@ class ReportScheduler:
 
     JOB_ID = "business_reporting_job"
 
-    def __init__(self, scheduler_config=None, timezone: str = SCHEDULER_TIMEZONE) -> None:
+    def __init__(self, scheduler_config: Optional[SchedulerConfig] = None, timezone: str = SCHEDULER_TIMEZONE) -> None:
         """
         Args:
             scheduler_config: Optional ``SchedulerConfig``; falls back to the

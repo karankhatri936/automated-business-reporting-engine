@@ -215,7 +215,7 @@ def run_reporting_pipeline(no_email: bool = False) -> Dict[str, Any]:
         )
 
     # 2. Validation (kept separate from transformation).
-    validate_product_data(products)
+    validate_product_data(products)  # Raises DataValidationError if invalid
     logger.info("Validation passed for %s records", len(products))
 
     # 3. Data cleaning and derived fields -> DataFrame.

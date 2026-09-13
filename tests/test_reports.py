@@ -2,14 +2,10 @@
 
 import os
 import re
-import sys
 import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
-
-# Add the parent directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 from openpyxl import load_workbook

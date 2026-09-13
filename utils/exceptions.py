@@ -5,24 +5,12 @@ class ReportingEngineError(Exception):
     """Base exception for the reporting engine."""
 
 
-class APIClientError(ReportingEngineError):
+class APIError(ReportingEngineError):
     """Raised when API client encounters an error."""
-
-
-class APITimeoutError(ReportingEngineError):
-    """Raised when an API request times out."""
-
-
-class APIResponseError(ReportingEngineError):
-    """Raised when API returns an unexpected response."""
 
 
 class APIPaginationError(ReportingEngineError):
     """Raised when pagination fails or data is inconsistent."""
-
-
-# Alias for backward compatibility
-APIError = APIClientError
 
 
 class DataValidationError(ReportingEngineError):
@@ -31,10 +19,6 @@ class DataValidationError(ReportingEngineError):
 
 class DataProcessingError(ReportingEngineError):
     """Raised when data processing fails."""
-
-
-class ReportGenerationError(ReportingEngineError):
-    """Raised when report generation fails."""
 
 
 class ExcelReportError(ReportingEngineError):

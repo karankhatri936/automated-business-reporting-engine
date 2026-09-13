@@ -26,7 +26,7 @@ from email.utils import formatdate, make_msgid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..config import config
+from ..config import EmailConfig, config
 from ..utils.exceptions import EmailDeliveryError
 from ..utils.logger import setup_logger
 
@@ -47,7 +47,7 @@ class EmailSender:
 
     DEFAULT_SUBJECT = "Business Report"
 
-    def __init__(self, email_config=None) -> None:
+    def __init__(self, email_config: Optional[EmailConfig] = None) -> None:
         """
         Args:
             email_config: Optional EmailConfig; falls back to the app config.
@@ -265,7 +265,7 @@ def send_report_email(
     pdf_path: Path,
     summary: Optional[Dict[str, Any]] = None,
     subject: Optional[str] = None,
-    email_config=None,
+    email_config: Optional[EmailConfig] = None,
 ) -> bool:
     """
     Convenience wrapper around :class:`EmailSender`.
